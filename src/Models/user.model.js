@@ -47,19 +47,24 @@ const userSchema = new Schema(
   },
   { timestamp: true }
 );
-
+//  THIS METHOD ENCYRYPT THE USER PASSWROD
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  if (!this.isModified("password")) return next(); // IF PASSWORD IS NOT MODIFIED THEN SIMPLE RETURN next() FALG
+  //  OTHERWISE ENCRYPT PASSWORD  IN HASH
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
+
+//   NOW USER ENTER  HIS PASSWORD THEN I  AM  CONVERT THIS IN ENCRYPTION DUE TO CHECKING THAT USER ENTERD PASSWORD AND PASSWORD INSIDE DATABSE IS SAME
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
+//  USING JWT  AS KEY  FOR MY DATABASE
+//  TO GENTARATE ACCES TOKEN
 userSchema.methods.genrateaccesToken = function () {
   return jwt.sign(
     {
-      id: this._id,
+      _id: this._id,
       email: this.email,
       userName: this.userName,
       fullname: this.fullname,
@@ -70,13 +75,12 @@ userSchema.methods.genrateaccesToken = function () {
     }
   );
 };
+
+//  TO GENRATE REFRESH TOKEN
 userSchema.methods.genrateRefreshToken = function () {
   return jwt.sign(
     {
       id: this._id,
-      email: this.email,
-      userName: this.userName,
-      fullname: this.fullname,
     },
     process.env.REFRESH_TOKEN_SECRECT,
     {
