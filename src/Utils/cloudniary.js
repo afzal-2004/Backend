@@ -17,13 +17,12 @@ const uploadResult = async (localFilePath) => {
       resource_type: "auto",
     });
     console.log(" File Has been Uploaded  on cloudNiary SuccesFully");
-    responce.url();
+    fs.unlinkSync(localFilePath);
     return responce;
   } catch (error) {
     // Remove all Temprary local  saved File
-    fs.unlinSync(localFilePath);
+    fs.unlinkSync(localFilePath);
     return null;
-    console.log(error);
   }
 };
 export { uploadResult };

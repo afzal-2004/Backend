@@ -18,11 +18,11 @@ const registerUser = asyncHandler(async (req, res) => {
   // Check for User Creation
   //  Return Response
 
-  const { fullName, userName, email, password } = req.body;
+  const { fullname, userName, email, Password } = req.body;
   console.log("email:", email);
-  console.log("fullName:", fullName);
+  console.log("fullName:", fullname);
   console.log("userName:", userName);
-  console.log("password:", password);
+  console.log("password:", Password);
 
   // if (fullName === "") {
   //   throw new ApiError(400, "Full Name is required");
@@ -39,37 +39,39 @@ const registerUser = asyncHandler(async (req, res) => {
   // SIMALERLY CHECK ONE BY ONE EVERY FIELD
 
   if (
-    [fullName, email, userName, password].some((field) => field?.trim() === "")
+    [fullname, email, userName, Password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, " All fiels are required");
   }
-  const exectidUser = user.findOne({
+  const exectidUser = await user.findOne({
     $or: [{ userName }, { email }],
   });
   if (exectidUser) {
     throw new ApiError(409, " UserName or email is Already Existed");
   }
-  const avatarLocalPath = req.files?.avatar[0]?.path;
-  const CoverLocalPath = req.files?.coverImage[0]?.path;
+  // const coverImage = req.files?.coverImage;
+  const avatarLocalPath = req.files?.avatar?.[0]?.path;
+  const CoverLocalPath = req.files?.coverImage?.[0]?.path;
+
   if (!avatarLocalPath) {
     throw new ApiError("400", "Avtar image  is Required");
   }
-  const avatar = await uploadResult(avatarLocalPath);
+  const avtar = await uploadResult(avatarLocalPath);
   const coverImage = await uploadResult(CoverLocalPath);
-  if (!avatar) {
+  if (!avtar) {
     throw new ApiError("400", "Avtar image  is Required");
   }
   const User = await user.create({
-    fullName,
-    avatar: avatar.url,
+    fullname,
+    avtar: avtar.url,
     coverImage: coverImage?.url || "",
     email,
-    password,
+    Password,
     userName: userName.toLowerCase(),
   });
   const CreatedUser = await user
     .findById(User._id)
-    .select("-password -refreshToken");
+    .select("-Password -refreshToken");
   if (!CreatedUser) {
     throw new ApiError(500, " SomeThing went Wrong while register the user ");
   }

@@ -24,7 +24,7 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    avtar: {
+    avatar: {
       type: String, // cloudniary Service
       required: true,
     },
@@ -45,7 +45,7 @@ const userSchema = new Schema(
       type: String,
     },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 //  THIS METHOD ENCYRYPT THE USER PASSWROD
 userSchema.pre("save", async function (next) {
