@@ -56,6 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!avatarLocalPath) {
     throw new ApiError("400", "Avtar image  is Required");
   }
+
   const avtar = await uploadResult(avatarLocalPath);
   const coverImage = await uploadResult(CoverLocalPath);
   if (!avtar) {
@@ -63,7 +64,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
   const User = await user.create({
     fullname,
-    avtar: avtar.url,
+    avatar: avtar.url,
     coverImage: coverImage?.url || "",
     email,
     Password,
