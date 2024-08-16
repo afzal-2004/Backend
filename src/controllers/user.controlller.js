@@ -16,6 +16,7 @@ const genrateAccesAndrefressTokens = async (userId) => {
     throw new ApiError(500, "Something Went Wrong ");
   }
 };
+//  REGISTER NEW USER
 const registerUser = asyncHandler(async (req, res) => {
   // res.status(200).json({
   //   message: "AfzalKhan",
@@ -102,7 +103,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponce(200, CreatedUser, "User registred succesFully"));
 });
-
+//  EXISTED  USER LOGIN
 const loginUser = asyncHandler(async (req, res) => {
   // req body -->data
   // username or email
@@ -111,12 +112,12 @@ const loginUser = asyncHandler(async (req, res) => {
   // access and refresh token  genrated
   // send cookie
   const { userName, email, Password } = req.body;
-  if (userName === "" || email === "") {
-    throw new ApiError(400, "username or Password is required");
+  if (userName === "" && email === "") {
+    throw new ApiError(400, "username or Email is required");
   }
 
   const User = await user.findOne({
-    $or: [{ userName, email }],
+    $or: [{ userName }, { email }],
   });
   if (!User) {
     throw new ApiError(404, "User Does Not exist");
@@ -129,8 +130,9 @@ const loginUser = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = await genrateAccesAndrefressTokens(
     User._id
   );
-  const loggedInUser = await user.findById(User._id);
-  select("-Password -refreshToken");
+  const loggedInUser = await user
+    .findById(User._id)
+    .select("-Password -refreshToken");
   const options = {
     httpOnly: true,
     secure: true,
@@ -147,10 +149,11 @@ const loginUser = asyncHandler(async (req, res) => {
           accessToken,
           refreshToken,
         },
-        "User Loggedin Succefully"
+        "User Logged In Succefully"
       )
     );
 });
+//    LOGIN USER  TO LOGOUT
 const logoutUser = asyncHandler(async (req, res) => {
   user.findByIdAndUpdate(
     req.User._id,
