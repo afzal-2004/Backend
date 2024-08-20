@@ -176,18 +176,20 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("refreshToken", options)
     .json(new ApiResponce(200, {}, "User Logged Out SuccesFully "));
 });
+
 const refreshAccesToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken;
 
-  if (!refreshAccesToken) {
+  if (!incomingRefreshToken) {
     throw new ApiError(401, "unauthorized request");
   }
+
   try {
     const decodedToken = jwt.verify(
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRECT
     );
-    const User = user.findById(decodedToken?._id);
+    const User = await user.findById(decodedToken?._id);
     if (!User) {
       throw new ApiError(401, "Invalid refresh Token ");
     }
@@ -198,18 +200,18 @@ const refreshAccesToken = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: true,
     };
-    const { accessToken, newrefreshToken } = await genrateAccesAndrefressTokens(
+    const { accessToken, newRefreshToken } = await genrateAccesAndrefressTokens(
       User._id
     );
     return res
       .status(200)
-      .cookie("accesToken", accessToken, options)
-      .cookie("refreshToken", newrefreshToken, options)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
       .json(
         new ApiResponce(
           200,
-          { accessToken, refreshToken: newrefreshToken },
-          "Acces Token Refresh Succefully "
+          { accessToken, refreshToken: newRefreshToken },
+          "Access Token Refresh Succefully "
         )
       );
   } catch (error) {
