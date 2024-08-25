@@ -248,7 +248,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
       {
         $set: {
           fullname,
-          email: email,
+          email,
         },
       },
       { new: true }
@@ -264,27 +264,27 @@ const UpdateuserAvatar = asyncHandler(async (req, res) => {
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar  File is missing ");
-    const avatar = await uploadResult(avatarLocalPath);
-    if (!avatar.url) {
-      throw new ApiError(400, "Error while uploading file");
-    }
-    const User = await user
-      .findByIdAndUpdate(
-        req.User._id,
-        {
-          $set: {
-            avatar: avatar.url,
-          },
-        },
-        {
-          new: true,
-        }
-      )
-      .select("-Password");
-    return res
-      .status(200)
-      .json(new ApiResponce(200, User, " Avatar Image Updated Succefully "));
   }
+  const avatar = await uploadResult(avatarLocalPath);
+  if (!avatar.url) {
+    throw new ApiError(400, "Error while uploading file");
+  }
+  const User = await user
+    .findByIdAndUpdate(
+      req.User._id,
+      {
+        $set: {
+          avatar: avatar.url,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+    .select("-Password");
+  return res
+    .status(200)
+    .json(new ApiResponce(200, User, " Avatar Image Updated Succefully "));
 });
 
 const UpdateusercoverImage = asyncHandler(async (req, res) => {
@@ -292,27 +292,27 @@ const UpdateusercoverImage = asyncHandler(async (req, res) => {
 
   if (!coverLocalPath) {
     throw new ApiError(400, " CoverImage    File is missing ");
-    const coverImage = await uploadResult(coverLocalPath);
-    if (!coverImage.url) {
-      throw new ApiError(400, "Error while uploading file");
-    }
-    const User = await user
-      .findByIdAndUpdate(
-        req.User._id,
-        {
-          $set: {
-            CoverImage: coverImage.url,
-          },
-        },
-        {
-          new: true,
-        }
-      )
-      .select("-Password");
-    return res
-      .status(200)
-      .json(new ApiResponce(200, User, "Cover Image Updated Succefully "));
   }
+  const coverImage = await uploadResult(coverLocalPath);
+  if (!coverImage.url) {
+    throw new ApiError(400, "Error while uploading file");
+  }
+  const User = await user
+    .findByIdAndUpdate(
+      req.User._id,
+      {
+        $set: {
+          CoverImage: coverImage.url,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+    .select("-Password");
+  return res
+    .status(200)
+    .json(new ApiResponce(200, User, "Cover Image Updated Succefully "));
 });
 
 export {
